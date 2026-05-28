@@ -18,7 +18,7 @@ class Product(models.Model):
         verbose_name_plural = 'Product'
     
     def __str__(self):
-        return f'{self.name} - {self.category} - {self.quantity}'
+        return f'{self.name} - {self.category}'
     
 class Order(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
@@ -29,5 +29,8 @@ class Order(models.Model):
     class Meta:
         verbose_name_plural = 'Order'
 
-    def __str__(self):
-        return f' {self.product.name} Ordered by: {self.staff.username} Quantity: {self.order_quantity} on {self.order_date.strftime("%Y-%m-%d %H:%M:%S")}'
+def __str__(self):
+    staff_name = self.staff.username if self.staff else "No Staff"
+    product_name = self.product.name if self.product else "No Product"
+
+    return f'{product_name} Quantity: {self.order_quantity}'

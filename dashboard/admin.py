@@ -4,12 +4,19 @@ from django.contrib.auth.models import Group
 
 admin.site.site_header = 'Inventory Dashboard'
 
+
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'quantity')
     search_fields = ('name', 'category')
     list_filter = ('category',)
 
-# Register your models here.
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('product', 'order_quantity')
+
+
+# Register models
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Order)
+admin.site.register(Order, OrderAdmin)
+
 # admin.site.unregister(Group)

@@ -1,0 +1,15 @@
+asgiref==3.11.1
+certifi==2026.4.22
+crispy-bootstrap4==2026.2
+distlib==0.4.0
+Django==6.0.5
+django-crispy-forms==2.6
+filelock==3.29.0
+packaging==26.2
+pillow==12.2.0
+pipenv==2026.6.1
+platformdirs==4.9.6
+python-discovery==1.2.2
+setuptools==82.0.1
+sqlparse==0.5.5
+tzdata==2026.2

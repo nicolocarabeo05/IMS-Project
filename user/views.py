@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import CreateUserForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth import logout as auth_logout
 from django.shortcuts import render, redirect
+from django.contrib import messages
 
 # Create your views here.
 def register(request):
@@ -10,13 +11,15 @@ def register(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account for {username} has been created successfully!. You can now log in.')
             return redirect('user_login')
             
     else:
         form = CreateUserForm()
     context = {
         'form': form,
-
+        'messages': messages.get_messages(request)
     }
     return render(request, 'user/register.html', context)
 
