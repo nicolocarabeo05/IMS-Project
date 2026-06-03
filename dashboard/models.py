@@ -1,36 +1,40 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-# Create your models here.
-CATEGORY = (
-    ('Stationary', 'Stationary'),
-    ('Electronics', 'Electronics'),
-    ('Food', 'Food'),
-)
+from .enums import Category, OrderStatus
 
 
 class Product(models.Model):
     name = models.CharField(max_length=100, null=True)
-    category = models.CharField(max_length=20, choices=CATEGORY, null=True)
+    category = models.CharField(max_length=20, choices=Category.choices, null=True)
     quantity = models.PositiveIntegerField(null=True)
 
     class Meta:
-        verbose_name_plural = 'Product'
-    
+        verbose_name_plural = "Product"
+
     def __str__(self):
-        return f'{self.name} - {self.category}'
-    
+        return f"{self.name} - {self.category}"
+
+
 class Order(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
     staff = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     order_quantity = models.PositiveIntegerField(null=True)
     order_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20, choices=OrderStatus.choices, default=OrderStatus.PROCESSING
+    )
 
     class Meta:
-        verbose_name_plural = 'Order'
+        verbose_name_plural = "Order"
+
+    def __str__(self):
+        product_name = self.product.name if self.product else "No Product"
+
+        return f"{product_name} Quantity: {self.order_quantity}"
+
 
 def __str__(self):
     staff_name = self.staff.username if self.staff else "No Staff"
     product_name = self.product.name if self.product else "No Product"
 
-    return f'{product_name} Quantity: {self.order_quantity}'
+    return f"{product_name} Quantity: {self.order_quantity}"

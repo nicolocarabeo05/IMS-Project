@@ -12,7 +12,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('product', 'order_quantity')
+    list_display = ('product', 'order_quantity', 'status')
 
 
 # Register models

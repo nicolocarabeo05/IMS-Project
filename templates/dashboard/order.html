@@ -19,7 +19,9 @@
                             <th scope="col">Category</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Order by</th>
+                            <th scope="col">Status</th>
                             <th scope="col">Order Date</th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,12 +30,40 @@
                             <td>{{ order.product.name }}</td>
                             <td>{{ order.product.category }}</td>
                             <td>{{ order.order_quantity }}</td>
-                            <td>
-                                {{ order.staff.username }}
-                            </td>
-                            <td>
-                                {{ order.order_date }}
-                            </td>
+                            <td>{{ order.staff.username }}</td>
+                        <td>
+                            <span class="badge 
+                            {% if order.status == 'Cancelled' %}bg-danger
+                            {% elif order.status == 'Delivered' %}bg-success
+                            {% elif order.status == 'For Delivery' %}bg-warning
+                            {% else %}bg-info{% endif %}">
+                            {{ order.status }}
+                            </span>
+                        </td>
+
+                            <td>{{ order.order_date }}</td>
+
+                        <td>
+                            {% if order.status == "Processing" %}
+                                <a href="{% url 'dashboard-cancel-order' order.id %}"
+                                    class="btn btn-danger btn-sm">
+                                Cancel
+                        </a>
+
+                            {% elif order.status == "Cancelled" %}
+                                <span class="badge bg-secondary">Cancelled</span>
+
+                            {% elif order.status == "Delivered" %}
+                                <span class="badge bg-success">Delivered</span>
+
+                            {% elif order.status == "For Delivery" %}
+                                <span class="badge bg-warning">For Delivery</span>
+
+                            {% else %}
+                                <span class="badge bg-info">Processing</span>
+                            {% endif %}
+                        </td>
+
                         </tr>
                         {% endfor %}
                     </tbody>
