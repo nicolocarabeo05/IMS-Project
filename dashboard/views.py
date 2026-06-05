@@ -5,18 +5,38 @@ from .models import Product, Order
 from .forms import ProductForm, OrderForm
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .enums import OrderStatus
+from .enums import OrderStatus, Category
+from django.db.models import Q
 
 # Create your views here.
 
 
 @login_required
 def index(request):
-    orders = Order.objects.all()
+    orders = Order.objects.order_by("-order_date")
     products = Product.objects.all()
     orders_count = orders.count()
     product_count = Product.objects.all().count()
     workers_count = User.objects.all().count()
+
+    product = request.GET.get('product')
+    category = request.GET.get('category')
+    status = request.GET.get('status')
+    order_date = request.GET.get('order_date')
+
+    if product:
+        orders = orders.filter(product__name__icontains=product)
+
+    if category and category != "All":
+        orders = orders.filter(product__category=category)
+
+    if status and status != "All":
+        orders = orders.filter(status=status)
+
+    if order_date:
+        orders = orders.filter(order_date__date=order_date)
+
+
     if request.method == "POST":
         form = OrderForm(request.POST)
 
@@ -24,12 +44,10 @@ def index(request):
             instance = form.save(commit=False)
             product = instance.product
 
-            # STEP 1: OUT OF STOCK CHECK (PUT IT HERE)
             if product.quantity <= 0:
                 messages.error(request, "Product is out of stock.")
                 return redirect("dashboard-index")
 
-            # STEP 2: CHECK IF ENOUGH STOCK FOR ORDER
             if product.quantity >= instance.order_quantity:
 
                 product.quantity -= instance.order_quantity
@@ -47,6 +65,7 @@ def index(request):
 
     else:
         form = OrderForm()
+
     context = {
         "orders": orders,
         "form": form,
@@ -54,6 +73,9 @@ def index(request):
         "orders_count": orders_count,
         "product_count": product_count,
         "workers_count": workers_count,
+
+        "category_choices": Category.choices,
+        "status_choices": OrderStatus.choices,
     }
     return render(request, "dashboard/index.html", context)
 
@@ -62,15 +84,36 @@ def index(request):
 def staff(request):
     workers = User.objects.all()
     workers_count = workers.count()
-    orders = Order.objects.all()
+    orders = Order.objects.filter(staff=request.user).order_by("-order_date")
     orders_count = orders.count()
     product_count = Product.objects.all().count()
+
+    product = request.GET.get('product')
+    category = request.GET.get('category')
+    status = request.GET.get('status')
+    order_date = request.GET.get('order_date')
+
+    if product:
+        orders = orders.filter(product__name__icontains=product)
+
+    if category and category != "All":
+        orders = orders.filter(product__category=category)
+
+    if status and status != "All":
+        orders = orders.filter(status=status)
+
+    if order_date:
+        orders = orders.filter(order_date__date=order_date)
+
     context = {
         "workers": workers,
         "workers_count": workers_count,
         "orders": orders,
         "orders_count": orders_count,
         "product_count": product_count,
+
+        "category_choices": Category.choices,
+        "status_choices": OrderStatus.choices,
     }
     return render(request, "dashboard/staff.html", context)
 
@@ -78,8 +121,15 @@ def staff(request):
 @login_required
 def staff_details(request, pk):
     workers = User.objects.get(id=pk)
+    workers_count = User.objects.all().count()
+    orders_count = Order.objects.all().count()
+    product_count = Product.objects.all().count()
+
     context = {
         "workers": workers,
+        "workers_count": workers_count,
+        "orders_count": orders_count,
+        "product_count": product_count,
     }
     return render(request, "dashboard/staff_details.html", context)
 
@@ -142,12 +192,30 @@ def product_update(request, pk):
 
 @login_required
 def order(request):
-    orders = Order.objects.select_related("product", "staff").all()
+    orders = Order.objects.order_by("-order_date")
     orders_count = orders.count()
     workers = User.objects.all()
     workers_count = workers.count()
     items = Product.objects.all()
     product_count = items.count()
+
+    product = request.GET.get('product')
+    category = request.GET.get('category')
+    status = request.GET.get('status')
+    order_date = request.GET.get('order_date')
+
+    if product:
+        orders = orders.filter(product__name__icontains=product)
+
+    if category and category != "All":
+        orders = orders.filter(product__category=category)
+
+    if status and status != "All":
+        orders = orders.filter(status=status)
+
+    if order_date:
+        orders = orders.filter(order_date__date=order_date)
+
     context = {
         "orders": orders,
         "orders_count": orders_count,
@@ -155,6 +223,8 @@ def order(request):
         "workers_count": workers_count,
         "products": items,
         "product_count": product_count,
+        "category_choices": Category.choices,
+        "status_choices": OrderStatus.choices,
     }
     return render(request, "dashboard/order.html", context)
 
@@ -173,3 +243,38 @@ def cancel_order(request, pk):
         order.save()
 
     return redirect("dashboard-order")
+
+@login_required
+def update_order_status(request, pk, status):
+    order = Order.objects.get(id=pk)
+
+    if order.status in [
+        OrderStatus.CANCELLED,
+        OrderStatus.DELIVERED
+    ]:
+        return redirect("dashboard-order")
+
+    if status == "for_delivery":
+        order.status = OrderStatus.FOR_DELIVERY
+
+    elif status == "delivered":
+        order.status = OrderStatus.DELIVERED
+
+    order.save()
+
+    return redirect("dashboard-order")
+
+@login_required
+def staff_cancel_order(request, pk):
+    order = Order.objects.get(id=pk)
+
+    if order.status == OrderStatus.PROCESSING:
+        product = order.product
+
+        product.quantity += order.order_quantity
+        product.save()
+
+        order.status = OrderStatus.CANCELLED
+        order.save()
+
+    return redirect("dashboard-index")

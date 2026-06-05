@@ -29,12 +29,6 @@ class Order(models.Model):
 
     def __str__(self):
         product_name = self.product.name if self.product else "No Product"
+        staff_name = self.staff.username if self.staff else "No Staff"
 
-        return f"{product_name} Quantity: {self.order_quantity}"
-
-
-def __str__(self):
-    staff_name = self.staff.username if self.staff else "No Staff"
-    product_name = self.product.name if self.product else "No Product"
-
-    return f"{product_name} Quantity: {self.order_quantity}"
+        return f"{product_name} ({self.order_quantity}) - {staff_name}"

@@ -5,76 +5,177 @@
 
 {% include 'partials/topnav.html' %}
 
-<!--Table-->
-    <div class="container">
-        <div class="row my-4">
-            <div class="col-md-4">
+<div class="container">
 
-            </div>
-            <div class="col-md-8">
-                <table class="table bg-white">
-                    <thead class="bg-info">
-                        <tr class="text-white">
-                            <th scope="col">Product</th>
-                            <th scope="col">Category</th>
-                            <th scope="col">Quantity</th>
-                            <th scope="col">Order by</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Order Date</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for order in orders %}
-                        <tr>
-                            <td>{{ order.product.name }}</td>
-                            <td>{{ order.product.category }}</td>
-                            <td>{{ order.order_quantity }}</td>
-                            <td>{{ order.staff.username }}</td>
+    <div class="row my-3">
+        <div class="col-12">
+
+            <form method="GET" class="bg-white p-3 rounded shadow-sm">
+
+               <div class="row g-2 align-items-center">
+
+                <div class="col-md-4">
+                    <input type="text" name="product" class="form-control" placeholder="Product..." value="{{ request.GET.product }}">
+                </div>
+
+                <div class="col-md-2">
+                    <select name="category" class="form-select">
+                    <option value="All">Categories</option>
+                {% for key, value in category_choices %}
+                    <option value="{{ key }}"
+                    {% if request.GET.category == key %}selected{% endif %}>
+                    {{ value }}
+                    </option>
+                {% endfor %}
+            </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                    <option value="All">Status</option>
+                {% for key, value in status_choices %}
+                    <option value="{{ key }}"
+                    {% if request.GET.status == key %}selected{% endif %}>
+                    {{ value }}
+                    </option>
+                {% endfor %}
+            </select>
+                </div>
+
+                <div class="col-md-2">
+                    <input type="date" name="order_date" class="form-control" value="{{ request.GET.order_date }}">
+                </div>
+
+                <div class="col-md-2 d-flex gap-2">
+
+                    <button type="submit" class="btn btn-info w-50">
+                    Filter
+                    </button>
+
+                    <a href="{% url 'dashboard-order' %}" class="btn btn-secondary w-50">
+                    Reset
+                    </a>
+
+                </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <div class="row my-4">
+        <div class="col-md-12 table-responsive">
+
+            <table class="table bg-white table-striped">
+                <thead class="bg-info">
+                    <tr class="text-white">
+                        <th>Product:</th>
+                        <th>Category:</th>
+                        <th>Quantity:</th>
+                        <th>Ordered by:</th>
+                        <th>Status:</th>
+                        <th>Order Date:</th>
+                        <th>Action:</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.product.name }}</td>
+                        <td>{{ order.product.category }}</td>
+                        <td>{{ order.order_quantity }}</td>
+                        <td>{{ order.staff.username }}</td>
+
                         <td>
                             <span class="badge 
                             {% if order.status == 'Cancelled' %}bg-danger
                             {% elif order.status == 'Delivered' %}bg-success
                             {% elif order.status == 'For Delivery' %}bg-warning
                             {% else %}bg-info{% endif %}">
-                            {{ order.status }}
+                                {{ order.status }}
                             </span>
                         </td>
 
-                            <td>{{ order.order_date }}</td>
+                        <td>{{ order.order_date }}</td>
 
                         <td>
-                            {% if order.status == "Processing" %}
-                                <a href="{% url 'dashboard-cancel-order' order.id %}"
-                                    class="btn btn-danger btn-sm">
-                                Cancel
-                        </a>
 
-                            {% elif order.status == "Cancelled" %}
-                                <span class="badge bg-secondary">Cancelled</span>
+                        {% if order.status == "Processing" %}
 
-                            {% elif order.status == "Delivered" %}
-                                <span class="badge bg-success">Delivered</span>
+                            <div class="dropdown">
+                                <button class="btn btn-info btn-sm dropdown-toggle"
+                                        type="button"
+                                        data-bs-toggle="dropdown">
+                                    Processing
+                                </button>
 
-                            {% elif order.status == "For Delivery" %}
-                                <span class="badge bg-warning">For Delivery</span>
+                                <ul class="dropdown-menu">
 
-                            {% else %}
-                                <span class="badge bg-info">Processing</span>
-                            {% endif %}
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'dashboard-update-order-status' order.id 'for_delivery' %}">
+                                            For Delivery
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item text-danger"
+                                           href="{% url 'dashboard-cancel-order' order.id %}">
+                                            Cancel
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+                        {% elif order.status == "For Delivery" %}
+
+                            <div class="dropdown">
+                                <button class="btn btn-warning btn-sm dropdown-toggle"
+                                        type="button"
+                                        data-bs-toggle="dropdown">
+                                    For Delivery
+                                </button>
+
+                                <ul class="dropdown-menu">
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'dashboard-update-order-status' order.id 'delivered' %}">
+                                            Delivered
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item text-danger"
+                                           href="{% url 'dashboard-cancel-order' order.id %}">
+                                            Cancel
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+                        {% else %}
+
+                            <span class="text-muted"></span>
+
+                        {% endif %}
+
                         </td>
 
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                    </tr>
+                    {% endfor %}
+                </tbody>
 
+            </table>
+
+        </div>
     </div>
 
-
-
-    <!--End Table-->
+</div>
 
 {% endblock %}

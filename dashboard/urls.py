@@ -10,4 +10,6 @@ urlpatterns = [
     path("product/update/<int:pk>/", views.product_update, name="dashboard-product-update"),
     path("order/", views.order, name="dashboard-order"),
     path("cancel-order/<int:pk>/", views.cancel_order, name="dashboard-cancel-order"),
+    path("update-order-status/<int:pk>/<str:status>/", views.update_order_status, name="dashboard-update-order-status"),
+    path('staff/cancel-order/<int:pk>/', views.staff_cancel_order, name='staff-cancel-order'),
 ]

@@ -12,7 +12,9 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('product', 'order_quantity', 'status')
+    list_display = ('product', 'order_quantity', 'staff', 'order_date', 'status')
+    search_fields = ('product__name', 'staff__username', 'status')
+    list_filter = ('status', 'order_date')
 
 
 # Register models

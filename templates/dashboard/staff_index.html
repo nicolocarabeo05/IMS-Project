@@ -1,8 +1,81 @@
 {% load crispy_forms_tags %}
 
-<div class="container"> 
-<div>
+<div class="container">
+
+    {% for message in messages %}
+        {% if message %}
+            <div class="alert alert-danger {{ message.tags }} mt-3 alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+
+    <form method="GET" class="bg-white p-3 rounded shadow-sm mb-3">
+
+        <div class="row g-2 align-items-center">
+
+            <div class="col-md-3">
+                <input type="text"
+                       name="product"
+                       class="form-control"
+                       placeholder="Search product..."
+                       value="{{ request.GET.product }}">
+            </div>
+
+            <div class="col-md-2">
+                <select name="category" class="form-select">
+                    <option value="All">All Categories</option>
+                    {% for key, value in category_choices %}
+                        <option value="{{ key }}"
+                            {% if request.GET.category == key %}selected{% endif %}>
+                            {{ value }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="All">All Status</option>
+                    {% for key, value in status_choices %}
+                        <option value="{{ key }}"
+                            {% if request.GET.status == key %}selected{% endif %}>
+                            {{ value }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <input type="date"
+                       name="order_date"
+                       class="form-control"
+                       value="{{ request.GET.order_date }}">
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+
+                <button type="submit" class="btn btn-info w-50">
+                    Filter
+                </button>
+
+                <a href="{% url 'dashboard-index' %}" class="btn btn-secondary w-50">
+                    Reset
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+
     <div class="row mt-4">
+
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
@@ -11,43 +84,75 @@
                 <div class="card-body">
                     <form method="POST">
                         {% csrf_token %}
-                        {{ form |crispy }}
+                        {{ form|crispy }}
                         <input class="btn btn-info btn-block" type="submit" value="Make Request">
                     </form>
                 </div>
             </div>
         </div>
+
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
                     Orders Records
                 </div>
-                <div class="card-body">
+
+                <div class="card-body table-responsive">
                     <table class="table bg-white">
+
                         <thead class="bg-info text-white">
                             <tr>
-                                <th scope="col">Product</th>
-                                <th scope="col">Category</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Date</th>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
-                            <tbody>
+
+                        <tbody>
                             {% for order in orders %}
-                            {% if order.staff == user %}
                             <tr>
+
                                 <td>{{ order.product.name }}</td>
                                 <td>{{ order.product.category }}</td>
                                 <td>{{ order.order_quantity }}</td>
+
+                                <td>
+                                    <span class="badge
+                                        {% if order.status == 'Cancelled' %}bg-danger
+                                        {% elif order.status == 'Delivered' %}bg-success
+                                        {% elif order.status == 'For Delivery' %}bg-warning
+                                        {% else %}bg-info
+                                        {% endif %}">
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+
                                 <td>{{ order.order_date }}</td>
+
+                                <td>
+                                    {% if order.status == "Processing" %}
+                                        <a href="{% url 'dashboard-cancel-order' order.id %}"
+                                           class="btn btn-danger btn-sm">
+                                            Cancel
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">No Action</span>
+                                    {% endif %}
+                                </td>
+
                             </tr>
-                            {% endif %}
                             {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+
+                    </table>
                 </div>
+
             </div>
         </div>
+
     </div>
+
 </div>
