@@ -79,13 +79,13 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
-                    Make Request
+                    Order
                 </div>
                 <div class="card-body">
                     <form method="POST">
                         {% csrf_token %}
                         {{ form|crispy }}
-                        <input class="btn btn-info btn-block" type="submit" value="Make Request">
+                        <input class="btn btn-info btn-block" type="submit" value="Order">
                     </form>
                 </div>
             </div>
@@ -120,7 +120,7 @@
                                 <td>{{ order.order_quantity }}</td>
 
                                 <td>
-                                    <span class="badge
+                                    <span class="badge text-white
                                         {% if order.status == 'Cancelled' %}bg-danger
                                         {% elif order.status == 'Delivered' %}bg-success
                                         {% elif order.status == 'For Delivery' %}bg-warning
@@ -134,7 +134,7 @@
 
                                 <td>
                                     {% if order.status == "Processing" %}
-                                        <a href="{% url 'dashboard-cancel-order' order.id %}"
+                                        <a href="{% url 'staff-cancel-order' order.id %}"
                                            class="btn btn-danger btn-sm">
                                             Cancel
                                         </a>

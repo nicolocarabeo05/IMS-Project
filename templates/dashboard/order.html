@@ -90,7 +90,7 @@
                         <td>{{ order.staff.username }}</td>
 
                         <td>
-                            <span class="badge 
+                            <span class="badge text-white
                             {% if order.status == 'Cancelled' %}bg-danger
                             {% elif order.status == 'Delivered' %}bg-success
                             {% elif order.status == 'For Delivery' %}bg-warning
@@ -108,7 +108,7 @@
                             <div class="dropdown">
                                 <button class="btn btn-info btn-sm dropdown-toggle"
                                         type="button"
-                                        data-bs-toggle="dropdown">
+                                        data-toggle="dropdown">
                                     Processing
                                 </button>
 
@@ -136,7 +136,7 @@
                             <div class="dropdown">
                                 <button class="btn btn-warning btn-sm dropdown-toggle"
                                         type="button"
-                                        data-bs-toggle="dropdown">
+                                        data-toggle="dropdown">
                                     For Delivery
                                 </button>
 
