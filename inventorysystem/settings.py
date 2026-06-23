@@ -134,3 +134,8 @@ MEDIA_URL = 'media/'
 LOGIN_REDIRECT_URL = 'dashboard-index'
 
 LOGIN_URL = 'user_login'
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://ims-activity.arclabsdev.com",
+    "http://ims-activity.arclabsdev.com"
+]
