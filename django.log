@@ -1,0 +1,15 @@
+Watching for file changes with StatReloader
+[10/Jun/2026 14:27:09] "GET / HTTP/1.1" 200 4560
+[10/Jun/2026 14:27:10] "GET /static/style.css HTTP/1.1" 200 130
+Not Found: /favicon.ico
+[10/Jun/2026 14:27:10] "GET /favicon.ico HTTP/1.1" 404 6107
+[10/Jun/2026 14:32:10] "GET / HTTP/1.1" 200 4560
+Not Found: /favicon.ico
+[10/Jun/2026 14:32:10] "GET /favicon.ico HTTP/1.1" 404 6107
+[10/Jun/2026 14:32:22] "GET / HTTP/1.1" 200 4560
+Not Found: /favicon.ico
+[10/Jun/2026 14:32:22] "GET /favicon.ico HTTP/1.1" 404 6107
+[10/Jun/2026 14:33:23] "GET / HTTP/1.1" 200 4560
+Not Found: /favicon.ico
+[10/Jun/2026 14:33:23] "GET /favicon.ico HTTP/1.1" 404 6107
+^C
