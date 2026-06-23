@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-sd80nt=&6du%bz_3=xo0e@y9(cseo3h4sjd4zls952-fyfo96k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://ims-activity.arclabsdev.com', 'localhost', '127.0.0.1', '13.214.149.226']
 
 
 # Application definition
